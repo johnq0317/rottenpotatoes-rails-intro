@@ -17,6 +17,7 @@ class MoviesController < ApplicationController
     end
     if params[:sort] == 'release_date'
       @movies = Movie.order(params[:sort])
+    end
   end
 
   def new
