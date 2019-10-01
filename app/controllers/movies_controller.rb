@@ -13,6 +13,11 @@ class MoviesController < ApplicationController
   def index
     @movies = Movie.all
     @all_ratings = Movie.order(:rating).pluck(:rating).uniq
+    if params[:ratings]
+      @selected_ratings = params[:ratings].keys
+      @movies = Movie.where(:rating => @selected_ratings)
+    end
+    
     if params[:sort] == 'title'
       @movies = Movie.order(params[:sort])
       @title_header = 'hilite'
