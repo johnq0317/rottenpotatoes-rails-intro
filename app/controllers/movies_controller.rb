@@ -10,11 +10,15 @@ class MoviesController < ApplicationController
     # will render app/views/movies/show.<extension> by default
   end
 
-  def index
+  def index   
     @all_ratings = Movie.order(:rating).pluck(:rating).uniq
+    
 
     if params[:ratings]
+      session[:ratings] = params[:ratings].keys
       @selected_ratings = params[:ratings].keys
+   elsif session[:ratings]
+      @selected_ratings = session[:ratings]
     else
       @selected_ratings = @all_ratings
     end
@@ -26,14 +30,22 @@ class MoviesController < ApplicationController
     @movies = Movie.where(:rating => @selected_ratings)
 
     if params[:sort] == 'title'
-      @movies = Movie.order(params[:sort]).where(:rating => @selected_ratings)
+      session[:sort] = params[:sort]
+      @movies = Movie.order(params[:sort]).where(:rating => session[:ratings])
       @title_header = 'hilite'
     end
 
     if params[:sort] == 'release_date'
-      @movies = Movie.order(params[:sort]).where(:rating => @selected_ratings)
+      session[:sort] = params[:sort]
+      @movies = Movie.order(params[:sort]).where(:rating => session[:ratings])
       @release_header = 'hilite'
     end
+
+    if session[:sort]
+      @movies = Movie.order(session[:sort]).where(:rating => session[:ratings])
+      session[:sort] == 'release_date' ? @release_header = 'hilite' : @title_header = 'hilite'
+    end
+
   end
 
   def new
@@ -43,6 +55,7 @@ class MoviesController < ApplicationController
   def create
     @movie = Movie.create!(movie_params)
     flash[:notice] = "#{@movie.title} was successfully created."
+    flash.keep
     redirect_to movies_path
   end
 
@@ -54,6 +67,7 @@ class MoviesController < ApplicationController
     @movie = Movie.find params[:id]
     @movie.update_attributes!(movie_params)
     flash[:notice] = "#{@movie.title} was successfully updated."
+    flash.keep
     redirect_to movie_path(@movie)
   end
 
@@ -61,6 +75,7 @@ class MoviesController < ApplicationController
     @movie = Movie.find(params[:id])
     @movie.destroy
     flash[:notice] = "Movie '#{@movie.title}' deleted."
+    flash.keep
     redirect_to movies_path
   end
 
