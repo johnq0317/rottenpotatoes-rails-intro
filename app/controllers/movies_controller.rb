@@ -11,27 +11,27 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
     @all_ratings = Movie.order(:rating).pluck(:rating).uniq
 
     if params[:ratings]
       @selected_ratings = params[:ratings].keys
     else
-     @selected_ratings = @all_ratings
+      @selected_ratings = @all_ratings
     end
 
     @selected_ratings.each do |rating|
       params[rating] = true
     end
-
+    
     @movies = Movie.where(:rating => @selected_ratings)
 
     if params[:sort] == 'title'
-      @movies = Movie.where(:rating => @selected_ratings).order(params[:sort])
+      @movies = Movie.order(params[:sort]).where(:rating => @selected_ratings)
       @title_header = 'hilite'
     end
+
     if params[:sort] == 'release_date'
-      @movies = Movie.order(params[:sort])
+      @movies = Movie.order(params[:sort]).where(:rating => @selected_ratings)
       @release_header = 'hilite'
     end
   end

@@ -1,5 +1,3 @@
 class Movie < ActiveRecord::Base
-	#def get_ratings
-		#all_ratings = ['G', 'PG', 'PG-13', 'R']
-	#end
+	@@old_ratings = nil
 end
