@@ -21,6 +21,7 @@ class MoviesController < ApplicationController
       @selected_ratings = session[:ratings]
     else
       @selected_ratings = @all_ratings
+      session[:ratings] = @selected_ratings
     end
 
     @selected_ratings.each do |rating|
